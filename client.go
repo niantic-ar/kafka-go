@@ -308,7 +308,15 @@ func decodeMemberMetadata(rawMetadata []byte) (GroupMemberMetadata, error) {
 	}
 
 	if remain != 0 {
-		return mm, fmt.Errorf("Got non-zero number of bytes remaining: %d", remain)
+		// Notice: not sure why, but in some situation, the remaining bytes
+		//		   won't be zero. I cannot find a dcoument explaining the
+		//		   format of this metadata payload explaing what it could be.
+		//		   I guess it could be a new field introduced in newer version
+		//		   of Kafka? Given this is causing the lag reporting fails
+		//		   to function correctly, we are skipping the checks here
+		//		   for now.
+		//	       ref: https://github.com/segmentio/topicctl/issues/15
+		// return mm, fmt.Errorf("Got non-zero number of bytes remaining: %d", remain)
 	}
 
 	return mm, nil
